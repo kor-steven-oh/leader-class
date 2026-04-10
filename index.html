@@ -6,6 +6,11 @@
 <title>AI 하네스 실습</title>
 <style>
   :root {
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-right: env(safe-area-inset-right, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-left: env(safe-area-inset-left, 0px);
+    --mobile-nav-height: 72px;
     --bg: #eef3f8;
     --bg-top: #f8fbfe;
     --surface: rgba(255, 255, 255, 0.58);
@@ -46,6 +51,7 @@
 
   html {
     height: 100%;
+    min-height: 100%;
     background:
       radial-gradient(circle at 12% 10%, rgba(255, 255, 255, 0.9), transparent 20%),
       radial-gradient(circle at 82% 16%, rgba(110, 140, 220, 0.1), transparent 24%),
@@ -57,12 +63,16 @@
     color: var(--text);
     line-height: 1.6;
     min-height: 100vh;
+    min-height: 100svh;
+    min-height: 100dvh;
     height: 100vh;
+    height: 100dvh;
     overflow: hidden;
     display: flex;
     flex-direction: column;
     position: relative;
     background: transparent;
+    overscroll-behavior: none;
   }
 
   body::before,
@@ -102,7 +112,7 @@
   }
 
   .header {
-    padding: 22px 16px 12px;
+    padding: calc(18px + var(--safe-top)) calc(16px + var(--safe-right)) 12px calc(16px + var(--safe-left));
     flex-shrink: 0;
   }
 
@@ -191,14 +201,15 @@
     flex: 1;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    padding: 6px 0 120px;
+    padding: 6px 0 calc(var(--mobile-nav-height) + 48px + var(--safe-bottom));
     scrollbar-color: rgba(158, 177, 255, 0.4) transparent;
+    overscroll-behavior-y: contain;
   }
 
   .container {
     width: min(1120px, 100%);
     margin: 0 auto;
-    padding: 0 16px;
+    padding: 0 calc(16px + var(--safe-right)) 0 calc(16px + var(--safe-left));
   }
 
   .panels {
@@ -776,7 +787,7 @@
   .toast {
     position: fixed;
     left: 50%;
-    bottom: 92px;
+    bottom: calc(var(--mobile-nav-height) + 20px + var(--safe-bottom));
     transform: translateX(-50%) translateY(10px);
     background:
       linear-gradient(180deg, rgba(255, 255, 255, 0.64), rgba(246, 250, 255, 0.54));
@@ -806,10 +817,10 @@
   .bottom-nav {
     position: fixed;
     left: 50%;
-    bottom: 16px;
+    bottom: calc(10px + var(--safe-bottom));
     transform: translateX(-50%);
-    width: min(760px, calc(100% - 22px));
-    height: 72px;
+    width: min(760px, calc(100% - 22px - var(--safe-left) - var(--safe-right)));
+    height: var(--mobile-nav-height);
     padding: 9px;
     display: flex;
     justify-content: space-between;
@@ -872,6 +883,7 @@
     color: var(--muted);
     transition: color 0.22s ease, transform 0.22s ease, box-shadow 0.22s ease;
     min-height: 52px;
+    min-width: 0;
   }
 
   .nav-item::before,
@@ -936,6 +948,12 @@
     font-size: 17px;
     line-height: 1;
     text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+  }
+
+  .nav-item div:last-child {
+    white-space: nowrap;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
   }
 
   @keyframes panelFade {
@@ -1009,8 +1027,17 @@
   }
 
   @media (max-width: 767px) {
+    :root {
+      --mobile-nav-height: 68px;
+    }
+
     h2 {
       font-size: 22px;
+    }
+
+    .header {
+      padding-top: calc(14px + var(--safe-top));
+      padding-bottom: 10px;
     }
 
     .panel {
@@ -1023,9 +1050,88 @@
       border-radius: 26px;
     }
 
+    .header-kicker {
+      padding: 6px 10px;
+      font-size: 10px;
+      letter-spacing: 0.08em;
+    }
+
+    .header h1 {
+      font-size: clamp(1.8rem, 8vw, 2.5rem);
+      max-width: none;
+    }
+
+    .header p {
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .desc-text,
+    .step-card p,
+    .collapsible-content {
+      font-size: 13px;
+    }
+
+    .config-item select,
+    .config-item input,
+    textarea {
+      font-size: 16px;
+    }
+
+    textarea {
+      min-height: 136px;
+    }
+
+    .btn {
+      min-height: 50px;
+    }
+
+    .collapsible-header {
+      padding: 15px 16px;
+      font-size: 13px;
+    }
+
+    .pipeline-flow {
+      gap: 6px;
+      margin: 16px 0;
+      padding: 4px 1px;
+    }
+
+    .pipeline-step {
+      min-width: 112px;
+      padding: 10px 12px;
+      font-size: 11px;
+    }
+
+    .agent-badge {
+      font-size: 11px;
+      padding: 6px 10px;
+    }
+
     .bottom-nav {
-      height: 68px;
       border-radius: 28px;
+      padding: 7px;
+      gap: 4px;
+    }
+
+    .nav-item {
+      border-radius: 18px;
+      gap: 2px;
+      padding: 0 2px;
+      min-height: 50px;
+    }
+
+    .nav-item div:last-child {
+      font-size: 10px;
+    }
+
+    .nav-icon {
+      font-size: 16px;
+    }
+
+    .toast {
+      max-width: calc(100% - 20px);
+      padding: 12px 16px;
     }
   }
 </style>
